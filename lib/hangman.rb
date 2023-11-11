@@ -97,13 +97,14 @@ class Hangman
   def game_turn()
     puts
     puts "\n\n"
+    puts self.word_display
     guess = self.get_guess
     # byebug
     if guess === 'save'
       self.save_game
+      self.game_status = "save"
     else
       self.check_guess(guess)
-      puts self.word_display
       if !word_display.include?("_")
         self.game_status = "win"
       elsif self.remaining_guesses == 0
@@ -127,17 +128,23 @@ class Hangman
 
     if game
       self.game_status = "playing"
-      self.select_word
+      puts "Previous words #{self.guessed_letters} \n"
+    else
+      self.secret_word = self.select_word
     end
+
 
     while game_status == "playing"
       self.game_turn
     end
 
-    if game_status = 'save'
+    if game_status == 'save'
       puts "game saved!"
     else
       puts "You #{self.game_status}! The word was #{self.secret_word}"
+      if File.exist?("hangman_save.yml")
+        File.delete("hangman_save.yml")
+      end
     end
   end
 end
